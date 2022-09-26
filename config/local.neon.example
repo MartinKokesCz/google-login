@@ -1,0 +1,9 @@
+parameters:
+	google:
+		clientId:
+		clientSecret:
+
+database:
+	dsn: 'mysql:host=127.0.0.1:3306;dbname=dev_mat'
+	user: root
+	password: root
