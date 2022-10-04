@@ -33,7 +33,9 @@ final class GoogleProviderFactory
 		return new Google([
 			'clientId' => $this->clientId,
 			'clientSecret' => $this->clientSecret,
-			'redirectUri' => $this->linkGenerator->link('Admin:Sign:google'),
+			'redirectUri' => $this->linkGenerator->link('Admin:Sign:in'),
+			// http://localhost:8000/admin/sign/google
+			// http://localhost:8000/admin/sign/in
 		]);
 	}
 

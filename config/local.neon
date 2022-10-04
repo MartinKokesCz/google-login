@@ -1,0 +1,11 @@
+parameters:
+	google:
+		clientId: 168035771726-rb3hc95m423r8oohmoduakuigjju6682.apps.googleusercontent.com
+		clientSecret: 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
+		#clientId: 49185804556-p0u4ia5jnna7kud1562ubk5fj8q33qto.apps.googleusercontent.com
+		#clientSecret: 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
+
+database:
+	dsn: 'mysql:host=127.0.0.1:3306;dbname=eshop'
+	user: root
+	password: root

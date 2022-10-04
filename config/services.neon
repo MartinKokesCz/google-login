@@ -1,7 +1,6 @@
 services:
 	- App\Model\UserFacade
 	- App\Model\GoogleUserFacade
-	- App\Model\ProductFacade
 	- App\Forms\FormFactory
 	- App\Forms\SignInFormFactory
 	- App\Forms\SignUpFormFactory

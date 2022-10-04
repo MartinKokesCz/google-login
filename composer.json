@@ -23,14 +23,9 @@
 		"nette/robot-loader": "^3.3",
 		"nette/security": "^3.1",
 		"nette/utils": "^3.2",
-<<<<<<< HEAD
-		"latte/latte": "^2.10",
+		"latte/latte": "^2.11 || ^3.0",
 		"tracy/tracy": "^2.8",
 		"league/oauth2-google": "^4.0"
-=======
-		"latte/latte": "^2.11 || ^3.0",
-		"tracy/tracy": "^2.8"
->>>>>>> 24491b6e67f662734b76a076a548b4f4caa2b1f4
 	},
 	"autoload": {
 		"psr-4": {

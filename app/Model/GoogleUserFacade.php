@@ -36,7 +36,7 @@ final class GoogleUserFacade{
 
         $this->database->table(SELF::TableName)->insert([
             SELF::ColumnSub => $googleUser->getId(),
-            SELF::ColumnName => $googleUser->getName(),
+            SELF::ColumnName => $googleUser->getId(),
             SELF::ColumnGiven_name => $googleUser->getFirstName(),
             SELF::ColumnFamily_name => $googleUser->getLastName(),
             SELF::ColumnPicture => $googleUser->getAvatar(),
@@ -53,14 +53,13 @@ final class GoogleUserFacade{
 
     public function findByGoogleId($googleId){
         $googleUser = $this->database->table(SELF::TableName)
-            ->select(SELF::ColumnName)
-            ->select(SELF::ColumnPassword)
+            ->select(SELF::ColumnSub)
             ->where(SELF::ColumnSub, $googleId)
             ->fetch();        
 
         if($googleUser){
-            $user["username"] = $googleId;
-            $user["password"] = $googleUser[SELF::ColumnPassword];
+            $user["username"] = $googleUser[SELF::ColumnSub];
+            $user["password"] = $googleUser[SELF::ColumnSub];
            
             return $user;
         }else{
@@ -73,5 +72,3 @@ final class GoogleUserFacade{
     }
 
 }
-
-?>

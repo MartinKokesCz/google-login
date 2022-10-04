@@ -18,22 +18,13 @@ final class UserFacade implements Nette\Security\Authenticator
 	public const PasswordMinLength = 7;
 
 	private const
-<<<<<<< HEAD
-		TABLE_NAME = 'users',
-		COLUMN_ID = 'id',
-		COLUMN_NAME = 'sub',
-		COLUMN_USERNAME = 'username',
-		COLUMN_PASSWORD_HASH = 'password',
-		COLUMN_EMAIL = 'email',
-		COLUMN_ROLE = 'role';
-=======
 		TableName = 'users',
 		ColumnId = 'id',
 		ColumnName = 'username',
+		ColumnSub = 'sub',
 		ColumnPasswordHash = 'password',
 		ColumnEmail = 'email',
 		ColumnRole = 'role';
->>>>>>> 24491b6e67f662734b76a076a548b4f4caa2b1f4
 
 
 	private Nette\Database\Explorer $database;
@@ -62,6 +53,7 @@ final class UserFacade implements Nette\Security\Authenticator
 			throw new Nette\Security\AuthenticationException('The username is incorrect.', self::IDENTITY_NOT_FOUND);
 
 		} elseif (!$this->passwords->verify($password, $row[self::ColumnPasswordHash])) {
+			bdump($password);
 			throw new Nette\Security\AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
 
 		} elseif ($this->passwords->needsRehash($row[self::ColumnPasswordHash])) {
@@ -71,13 +63,8 @@ final class UserFacade implements Nette\Security\Authenticator
 		}
 
 		$arr = $row->toArray();
-<<<<<<< HEAD
-		//unset($arr[self::COLUMN_PASSWORD_HASH]);
-		return new Nette\Security\SimpleIdentity($row[self::COLUMN_ID], $row[self::COLUMN_ROLE], $arr);
-=======
 		unset($arr[self::ColumnPasswordHash]);
 		return new Nette\Security\SimpleIdentity($row[self::ColumnId], $row[self::ColumnRole], $arr);
->>>>>>> 24491b6e67f662734b76a076a548b4f4caa2b1f4
 	}
 
 
@@ -89,18 +76,10 @@ final class UserFacade implements Nette\Security\Authenticator
 	{
 		Nette\Utils\Validators::assert($email, 'email');
 		try {
-<<<<<<< HEAD
-			$this->database->table(self::TABLE_NAME)->insert([
-				self::COLUMN_NAME => $username,
-				self::COLUMN_USERNAME => $username,
-				self::COLUMN_PASSWORD_HASH => $this->passwords->hash($password),
-				self::COLUMN_EMAIL => $email,
-=======
 			$this->database->table(self::TableName)->insert([
 				self::ColumnName => $username,
 				self::ColumnPasswordHash => $this->passwords->hash($password),
 				self::ColumnEmail => $email,
->>>>>>> 24491b6e67f662734b76a076a548b4f4caa2b1f4
 			]);
 		} catch (Nette\Database\UniqueConstraintViolationException $e) {
 			throw new DuplicateNameException;

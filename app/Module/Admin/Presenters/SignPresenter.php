@@ -6,19 +6,13 @@ namespace App\Module\Admin\Presenters;
 
 use App\Forms;
 use App\Model\GoogleUserFacade;
-use League\OAuth2\Client\Provider\Google;
 use Nette;
 use Nette\Application\UI\Form;
+use League\OAuth2\Client\Provider\Google;
 
 
 final class SignPresenter extends Nette\Application\UI\Presenter
 {
-
-	/** @var Google */
-	private $google;
-
-    private $userRepository;
-
 	/** @persistent */
 	public string $backlink = '';
 
@@ -26,14 +20,19 @@ final class SignPresenter extends Nette\Application\UI\Presenter
 
 	private Forms\SignUpFormFactory $signUpFactory;
 
+	private Google $google;
 
-	public function __construct(Forms\SignInFormFactory $signInFactory, Forms\SignUpFormFactory $signUpFactory, Google $google, GoogleUserFacade $userRepository)
+	private GoogleUserFacade $googleUserFacade;
+
+
+	public function __construct(Forms\SignInFormFactory $signInFactory, Forms\SignUpFormFactory $signUpFactory, Google $google, GoogleUserFacade $googleUserFacade)
 	{
 		$this->signInFactory = $signInFactory;
 		$this->signUpFactory = $signUpFactory;
 
 		$this->google = $google;
-        $this->userRepository = $userRepository;
+		$this->googleUserFacade = $googleUserFacade;
+
 	}
 
 
@@ -63,8 +62,16 @@ final class SignPresenter extends Nette\Application\UI\Presenter
 	public function actionOut(): void
 	{
 		$this->getUser()->logout();
-		$this->flashMessage('... you have been signed out ...', 'success');
-		$this->redirect(':Front:Homepage:');
+	}
+
+	public function handleGoogleLogin(): void
+	{
+		$authorizationUrl = $this->google->getAuthorizationUrl([
+			'redirect_uri' => $this->link('//google'),
+		]);
+
+		$this->getSession(Google::class)->state = $this->google->getState();
+		$this->redirectUrl($authorizationUrl);
 	}
 
 	public function actionGoogle(): void
@@ -99,40 +106,28 @@ final class SignPresenter extends Nette\Application\UI\Presenter
 		}
 
 		$googleId = $googleUser->getId();
-		if ($user = $this->userRepository->findByGoogleId($googleId)) {
+		if ($user = $this->googleUserFacade->findByGoogleId($googleId)) {
 			// found existing user by googleId, login and redirect
-			$this->user->login($user["username"], $googleUser->getId());
+			$this->user->login($user["username"], $user["password"]);
 
 			if(in_array("admin", $this->user->roles)) {
 				$this->redirect(':Admin:Dashboard:');
 			}
-			$this->redirect(':Front:Homepage:');
+			$this->redirect(':Admin:Dashboard:');
 			
 		}
 
 		$googleEmail = $googleUser->getEmail();
-		if ($user = $this->userRepository->findByEmail($googleEmail)) {
+		if ($user = $this->googleUserFacade->findByEmail($googleEmail)) {
 			// found existing user with the same email, error and force them to login using password
 			$this->flashMessage('... somebody already signed up with given email ...', 'error');
 			$this->redirect(':Admin:Sign:in');
 		}
 
 		// new user, register them, login and redirect
-		$user = $this->userRepository->registerFromGoogle($googleUser);
+		$user = $this->googleUserFacade->registerFromGoogle($googleUser);
 		$this->user->login($user["username"], $user["password"]);
 		$this->flashMessage('... welcome ...', 'success');
-		$this->redirect(':Front:Homepage:');
+		$this->redirect(':Admin:Dashboard:');
 	}
-
-	public function handleGoogleLogin(): void
-	{
-		$authorizationUrl = $this->google->getAuthorizationUrl([
-			'redirect_uri' => $this->link('//google'),
-		]);
-
-		$this->getSession(Google::class)->state = $this->google->getState();
-		$this->redirectUrl($authorizationUrl);
-	}
-
-	
 }
